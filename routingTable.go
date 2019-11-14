@@ -25,6 +25,7 @@ func NewRoutingTable(id *ID) *RoutingTable {
 }
 
 // Add adds a new contact into the appropriate k-bucket within the routing table
+// returning the head of the bucket, the insertion index and an error if there was one
 func (r *RoutingTable) Add(c *Contact) (*Contact, int, error) {
 	delta := r.id.DistanceTo(c.ID)
 	index := r.determineInsertIndex(delta)
@@ -32,6 +33,15 @@ func (r *RoutingTable) Add(c *Contact) (*Contact, int, error) {
 	head, err := r.insertAt(index, c)
 
 	return head, index, err
+}
+
+// GetAlphaNodes gets α nodes out of its k-bucket where the id to be looked up would fit in.
+// α is a system wide concurrency parameter a value of 3 is suggested. If the corresponding k-bucket
+// has less than α entries, the node takes the α closest nodes it knows of.
+// Source: Implementation of the Kademlia Hash Table by Bruno Spori
+// https://pub.tik.ee.ethz.ch/students/2006-So/SA-2006-19.pdf
+func (r *RoutingTable) GetAlphaNodes(alpha int, id *ID) []Contact {
+	return r.getXClosestContacts(alpha, id)
 }
 
 func (r *RoutingTable) insertAt(i int, c *Contact) (*Contact, error) {

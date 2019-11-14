@@ -2,12 +2,18 @@ package gokad
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"math"
 )
 
 // MaxCapacity is a system defined MaxCapacity of each kbucket
 const MaxCapacity = 20
+
+// Errors
+const ErrBucketAtCapacity = "Bucket at Capacity"
+const ErrContactExists = "Contact Exists Already"
+const ErrBucketIndexOutOfBounds = "Bucket Index Out Of Bounds"
+const ErrNoHeadFound = "No Bucket Head Found"
 
 // KBucket is a bucket that contains k (MaxCapacity) contacts
 type KBucket struct {
@@ -45,14 +51,14 @@ func (b *KBucket) Insert(c *Contact) (*Contact, error) {
 	// 2. Node already exists: Move the node to the tail
 	if index > -1 {
 		b.moveToTail(index)
-		return nil, fmt.Errorf("Contact Already Exists")
+		return nil, errors.New(ErrContactExists)
 		// 1. Bucket does not contain node and is not at capacity: add it to the tail
 	} else if index < 0 && b.size < MaxCapacity {
 		b.add(c)
 		return nil, nil
 	}
 
-	return b.head, fmt.Errorf("Bucket at capacity")
+	return b.head, errors.New(ErrBucketAtCapacity)
 
 }
 
@@ -129,12 +135,12 @@ func (b *KBucket) add(c *Contact) {
 
 func (b *KBucket) moveToTail(index int) error {
 	if index >= b.size {
-		return fmt.Errorf("Index out of bounds")
+		return errors.New(ErrBucketIndexOutOfBounds)
 	}
 
 	head := b.head
 	if head == nil {
-		return fmt.Errorf("No Head")
+		return errors.New(ErrNoHeadFound)
 	}
 
 	if head.Next == nil || head.Next.Next == nil {
@@ -171,7 +177,7 @@ func (b *KBucket) moveToTail(index int) error {
 		fast = fast.Next
 
 		if fast == nil && counter != index {
-			return fmt.Errorf("Index Out of bounds")
+			return errors.New(ErrBucketIndexOutOfBounds)
 		}
 	}
 

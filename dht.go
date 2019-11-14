@@ -1,5 +1,11 @@
 package gokad
 
+import (
+	"net"
+)
+
+const MessageSize = 800
+
 type DHT struct {
 	ID           *ID
 	RoutingTable *RoutingTable
@@ -15,17 +21,16 @@ func NewDHT() *DHT {
 	}
 }
 
-func (dht *DHT) Bootstrap(bootsrapNode *Contact) {
+func (dht *DHT) Bootstrap(port int, ip net.IP, hexId string) (*Contact, int, error) {
+	id, err := From(hexId)
+	if err != nil {
+		return nil, 0, err
+	}
+	c := &Contact{
+		IP:   ip,
+		Port: port,
+		ID:   id,
+	}
 
+	return dht.RoutingTable.Add(c)
 }
-
-// func (dht *DHT) RPCNodeLookup(hex string) error {
-// 	target, err := From(hex)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	lookupNodes := dht.RoutingTable.getXClosestContacts(3, target)
-
-// 	return nil
-// }
