@@ -44,18 +44,18 @@ func (b *KBucket) Insert(c *Contact) (*Contact, error) {
 	// bucket is completely empty. just initialize it
 	if b.IsEmpty() {
 		b.add(c)
-		return nil, nil
+		return c, nil
 	}
 
 	index := b.indexOf(c)
 	// 2. Node already exists: Move the node to the tail
 	if index > -1 {
 		b.moveToTail(index)
-		return nil, errors.New(ErrContactExists)
+		return c, errors.New(ErrContactExists)
 		// 1. Bucket does not contain node and is not at capacity: add it to the tail
 	} else if index < 0 && b.size < MaxCapacity {
 		b.add(c)
-		return nil, nil
+		return c, nil
 	}
 
 	return b.head, errors.New(ErrBucketAtCapacity)

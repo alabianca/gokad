@@ -24,15 +24,24 @@ func NewRoutingTable(id *ID) *RoutingTable {
 
 }
 
-// Add adds a new contact into the appropriate k-bucket within the routing table
-// returning the head of the bucket, the insertion index and an error if there was one
+/*  Add adds a new contact into the appropriate k-bucket within the routing table
+    returning the contact that was added OR the head of the bucket, the insertion index and an error if there was one.
+    The head of the bucket is only returned if there is also a Bucket ErrBucketAtCapacity error.
+    We do this so we can ping the head to see if it is still active
+
+        "If Bucket contains MaxCapacity, the node at the head is pinged. If it replies, the current head is moved
+        to the tail and the contact is not added. If it does not reply, the head is discarded and the contact is
+        added to the tail"
+	@source: Implementation of the Kademlia Distributed Hash Table by Bruno Spori Semester Thesis
+   https://pub.tik.ee.ethz.ch/students/2006-So/SA-2006-19.pdf
+**/
 func (r *RoutingTable) Add(c *Contact) (*Contact, int, error) {
 	delta := r.id.DistanceTo(c.ID)
 	index := r.determineInsertIndex(delta)
 
-	head, err := r.insertAt(index, c)
+	contactOrHead, err := r.insertAt(index, c)
 
-	return head, index, err
+	return contactOrHead, index, err
 }
 
 // GetAlphaNodes gets α nodes out of its k-bucket where the id to be looked up would fit in.
