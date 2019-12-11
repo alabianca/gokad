@@ -37,7 +37,7 @@ func NewRoutingTable(id *ID) *RoutingTable {
 **/
 func (r *RoutingTable) Add(c *Contact) (*Contact, int, error) {
 	delta := r.id.DistanceTo(c.ID)
-	index := r.determineInsertIndex(delta)
+	index := r.determineBucketIndex(delta)
 
 	contactOrHead, err := r.insertAt(index, c)
 
@@ -58,8 +58,8 @@ func (r *RoutingTable) insertAt(i int, c *Contact) (*Contact, error) {
 	return bucket.Insert(c)
 }
 
-// determineInsertIndex determines at which index the id/contact should be inserted based on the distance
-func (r *RoutingTable) determineInsertIndex(delta NodeID) int {
+// determineBucketIndex determines at which index the id/contact should be inserted based on the distance
+func (r *RoutingTable) determineBucketIndex(delta NodeID) int {
 
 	for i := 0; i < MaxRoutingTableSize; i++ {
 		bit := delta.GetBitAt(uint(i))

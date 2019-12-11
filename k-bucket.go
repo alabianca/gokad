@@ -72,7 +72,7 @@ func (b *KBucket) Walk(walkFn func(c *Contact) bool) {
 
 	for {
 		done := walkFn(head)
-		head = head.Next
+		head = head.next
 		if head == nil || done {
 			break
 		}
@@ -127,7 +127,7 @@ func (b *KBucket) add(c *Contact) {
 		b.head = c
 		b.tail = c
 	} else {
-		b.tail.Next = c
+		b.tail.next = c
 		b.tail = c
 	}
 
@@ -143,13 +143,13 @@ func (b *KBucket) moveToTail(index int) error {
 		return errors.New(ErrNoHeadFound)
 	}
 
-	if head.Next == nil || head.Next.Next == nil {
+	if head.next == nil || head.next.next == nil {
 		return nil
 	}
 
 	if index == 0 {
 		temp := b.head
-		b.head = b.head.Next
+		b.head = b.head.next
 		b.tail = temp
 		return nil
 	}
@@ -160,13 +160,13 @@ func (b *KBucket) moveToTail(index int) error {
 	var fast *Contact
 
 	slow = head
-	target = head.Next
-	fast = target.Next
+	target = head.next
+	fast = target.next
 
 	for {
 		if counter == index {
-			slow.Next = fast
-			target.Next = nil
+			slow.next = fast
+			target.next = nil
 			b.tail = target
 			return nil
 		}
@@ -174,7 +174,7 @@ func (b *KBucket) moveToTail(index int) error {
 		counter++
 		slow = target
 		target = fast
-		fast = fast.Next
+		fast = fast.next
 
 		if fast == nil && counter != index {
 			return errors.New(ErrBucketIndexOutOfBounds)

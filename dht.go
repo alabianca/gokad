@@ -37,7 +37,11 @@ func (dht *DHT) Bootstrap(port int, ip net.IP, hexId string) (*Contact, int, err
 	return dht.RoutingTable.Add(c)
 }
 
+func (dht *DHT) GetAlphaNodes(alpha int, id ID) []Contact {
+	return dht.RoutingTable.GetAlphaNodes(alpha, &id)
+}
+
 // RPC
 func (dht *DHT) FindNode(id ID) []Contact {
-	return dht.RoutingTable.getXClosestContacts(k, &id)
+	return dht.GetAlphaNodes(k, id)
 }

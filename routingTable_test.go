@@ -34,7 +34,7 @@ func TestInsertDistanceBetween2Ids(t *testing.T) {
 		id2, _ := From(c.id2)
 		routing := NewRoutingTable(id1)
 		delta := id1.DistanceTo(id2)
-		index := routing.determineInsertIndex(delta)
+		index := routing.determineBucketIndex(delta)
 		if index != c.out {
 			t.Logf("Id1: %s\nId2: %s\n", c.id1, c.id2)
 			t.Logf("Delta: %x\n", delta.buf)
@@ -62,7 +62,7 @@ func TestDetermineInsertIndex(t *testing.T) {
 	for _, c := range cases {
 		id, _ := From(c.IN)
 		routing := NewRoutingTable(nil)
-		index := routing.determineInsertIndex(id)
+		index := routing.determineBucketIndex(id)
 		if index != c.OUT {
 			t.Errorf("Expected %d but got %d\n", c.OUT, index)
 		}

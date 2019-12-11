@@ -9,7 +9,7 @@ type Contact struct {
 	ID   *ID
 	IP   net.IP
 	Port int
-	Next *Contact
+	next *Contact
 }
 
 func (c *Contact) Serialize() ([]byte, error) {
@@ -26,8 +26,8 @@ func (c *Contact) Serialize() ([]byte, error) {
 
 	concat := make([]byte, 0)
 	concat = append(concat, id...)
-	concat = append(concat, ip...)
 	concat = append(concat, port...)
+	concat = append(concat, ip...)
 	concat = append(concat, end...)
 
 	return concat, nil
