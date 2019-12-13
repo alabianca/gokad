@@ -4,13 +4,13 @@ import "math"
 
 // RoutingTable that hold the KBuckets
 type RoutingTable struct {
-	id      *ID
+	id      ID
 	buckets []*KBucket
 }
 
 // NewRoutingTable returns a newly ininitalized routing table
 // The routing table's size is determined by MaxRoutingTableSize which is set to 160
-func NewRoutingTable(id *ID) *RoutingTable {
+func NewRoutingTable(id ID) *RoutingTable {
 	r := &RoutingTable{
 		id:      id,
 		buckets: make([]*KBucket, MaxRoutingTableSize),
@@ -49,7 +49,7 @@ func (r *RoutingTable) Add(c *Contact) (*Contact, int, error) {
 // has less than α entries, the node takes the α closest nodes it knows of.
 // Source: Implementation of the Kademlia Hash Table by Bruno Spori
 // https://pub.tik.ee.ethz.ch/students/2006-So/SA-2006-19.pdf
-func (r *RoutingTable) GetAlphaNodes(alpha int, id *ID) []Contact {
+func (r *RoutingTable) GetAlphaNodes(alpha int, id ID) []Contact {
 	return r.getXClosestContacts(alpha, id)
 }
 
@@ -101,7 +101,7 @@ func (r *RoutingTable) determineOrderOfVisits(delta NodeID) []int {
 	return phase1
 }
 
-func (r *RoutingTable) getXClosestContacts(x int, id *ID) []Contact {
+func (r *RoutingTable) getXClosestContacts(x int, id ID) []Contact {
 	delta := r.id.DistanceTo(id)
 	visits := r.determineOrderOfVisits(delta)
 	out := make([]Contact, 0)

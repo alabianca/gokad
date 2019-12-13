@@ -183,8 +183,8 @@ func (b *KBucket) moveToTail(index int) error {
 
 }
 
-func (b *KBucket) getXClosestContacts(x int, targetID *ID) []*Contact {
-	distances := make([]*Distance, b.Size())
+func (b *KBucket) getXClosestContacts(x int, targetID ID) []*Contact {
+	distances := make([]Distance, b.Size())
 	index := 0
 	distanceMap := make(map[string]*Contact)
 

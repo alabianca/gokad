@@ -13,13 +13,13 @@ func bucketIndex(index int) int {
 
 // compareDistance compares 2 distances to each other
 // return 1 if d1 is larger, -1 if d2 is larger and 0 if they are the same
-func compareDistance(d1, d2 *Distance) int {
+func compareDistance(d1, d2 Distance) int {
 	for i := 0; i < MaxCapacity; i++ {
-		if d1.buf[i] > d2.buf[i] {
+		if d1[i] > d2[i] {
 			return 1
 		}
 
-		if d1.buf[i] < d2.buf[i] {
+		if d1[i] < d2[i] {
 			return -1
 		}
 	}
@@ -27,7 +27,7 @@ func compareDistance(d1, d2 *Distance) int {
 	return 0
 }
 
-func sort(x []*Distance) {
+func sort(x []Distance) {
 	for i := 0; i < len(x); i++ {
 		for j := i + 1; j < len(x); j++ {
 			if compareDistance(x[i], x[j]) > 0 {

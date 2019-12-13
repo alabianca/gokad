@@ -9,7 +9,7 @@ const MessageSize = 800
 const k = 20
 
 type DHT struct {
-	ID           *ID
+	ID           ID
 	RoutingTable *RoutingTable
 }
 
@@ -38,7 +38,7 @@ func (dht *DHT) Bootstrap(port int, ip net.IP, hexId string) (*Contact, int, err
 }
 
 func (dht *DHT) GetAlphaNodes(alpha int, id ID) []Contact {
-	return dht.RoutingTable.GetAlphaNodes(alpha, &id)
+	return dht.RoutingTable.GetAlphaNodes(alpha, id)
 }
 
 // RPC

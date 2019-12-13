@@ -6,14 +6,14 @@ import (
 )
 
 type Contact struct {
-	ID   *ID
+	ID   ID
 	IP   net.IP
 	Port int
 	next *Contact
 }
 
 func (c *Contact) Serialize() ([]byte, error) {
-	id := c.ID.Bytes()
+	id := c.ID
 	ip, err := c.IP.MarshalText()
 	if err != nil {
 		return nil, err

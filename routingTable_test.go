@@ -2,6 +2,7 @@ package gokad
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -37,7 +38,7 @@ func TestInsertDistanceBetween2Ids(t *testing.T) {
 		index := routing.determineBucketIndex(delta)
 		if index != c.out {
 			t.Logf("Id1: %s\nId2: %s\n", c.id1, c.id2)
-			t.Logf("Delta: %x\n", delta.buf)
+			t.Logf("Delta: %x\n", delta)
 			t.Errorf("Expected index to be %d, but got %d", c.out, index)
 		}
 	}
@@ -98,7 +99,7 @@ func TestAddContactToRoutingTableWithoutErrors(t *testing.T) {
 		contact := generateContactFrom(c.id2)
 		routing := NewRoutingTable(id)
 
-		head, i, err := routing.Add(contact)
+		addedC, i, err := routing.Add(contact)
 
 		if err != nil {
 			t.Errorf("Expected error to be nil but got: %s\n", err)
@@ -108,8 +109,8 @@ func TestAddContactToRoutingTableWithoutErrors(t *testing.T) {
 			t.Errorf("Expected insert index to be %d but got %d\n", c.out, i)
 		}
 
-		if head != nil {
-			t.Errorf("Expected ping head to be nil but got %s\n", head.ID)
+		if strings.ToLower(addedC.ID.String()) != strings.ToLower(c.id2) {
+			t.Errorf("Expected added contact to be %s but got %s\n", c.id2, addedC.ID)
 		}
 
 		if routing.buckets[i].Size() != 1 {

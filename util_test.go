@@ -39,26 +39,26 @@ func TestSortDistance(t *testing.T) {
 	delta2 := root.DistanceTo(id2)
 	delta3 := root.DistanceTo(id3)
 
-	input := []*Distance{delta3, delta1, delta2}
+	input := []Distance{delta3, delta1, delta2}
 	sort(input)
 
 	for i, d := range input {
 		if i == 0 {
-			if d != delta1 {
+			if !d.Equal(delta1) {
 				t.Errorf("Expected (delta1) %s, but got %s\n", delta1, d)
 			}
 			continue
 		}
 
 		if i == 1 {
-			if d != delta2 {
+			if !d.Equal(delta2) {
 				t.Errorf("Expected (delta2) %s, but got %s\n", delta2, d)
 			}
 			continue
 		}
 
 		if i == 2 {
-			if d != delta3 {
+			if !d.Equal(delta3) {
 				t.Errorf("Expected (delta3) %s, but got %s\n", delta3, d)
 			}
 			continue
