@@ -21,7 +21,7 @@ func (c *Contact) Serialize() []byte {
 	port := make([]byte, 2)
 	binary.BigEndian.PutUint16(port, uint16(c.Port))
 
-	end := make([]byte, 0)
+	end := make([]byte, 1)
 
 	concat := make([]byte, 0)
 	concat = append(concat, id...)
