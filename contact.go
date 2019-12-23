@@ -12,7 +12,7 @@ type Contact struct {
 	next *Contact
 }
 
-// 20 bytes id <- 16 bytes ip <- 2 bytes port <- 1 byte end
+// 20 bytes id <- 2 bytes ip <- 16 bytes port
 func (c *Contact) Serialize() []byte {
 	id := c.ID
 
@@ -21,13 +21,11 @@ func (c *Contact) Serialize() []byte {
 	port := make([]byte, 2)
 	binary.BigEndian.PutUint16(port, uint16(c.Port))
 
-	end := make([]byte, 1)
 
 	concat := make([]byte, 0)
 	concat = append(concat, id...)
 	concat = append(concat, port...)
 	concat = append(concat, ip...)
-	concat = append(concat, end...)
 
 	return concat
 
