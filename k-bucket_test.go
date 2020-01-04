@@ -157,18 +157,18 @@ func getPreSetBucket() *KBucket {
 	return bucket
 }
 
-func generateRandomContact() *Contact {
+func generateRandomContact() Contact {
 	id := GenerateRandomID()
-	return &Contact{
+	return Contact{
 		ID:   id,
 		IP:   net.IPv4(byte(127), byte(0), byte(0), byte(1)), // 127.0.0.1
 		Port: 3000,
 	}
 }
 
-func generateContactFrom(hex string) *Contact {
+func generateContactFrom(hex string) Contact {
 	id, _ := From(hex)
-	return &Contact{
+	return Contact{
 		ID:   id,
 		IP:   net.IPv4(byte(127), byte(0), byte(0), byte(1)), // 127.0.0.1
 		Port: 3000,

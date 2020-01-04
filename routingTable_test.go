@@ -2,6 +2,7 @@ package gokad
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -131,14 +132,10 @@ func TestAddExistingContactToRoutingTable(t *testing.T) {
 		t.Errorf("Expected error to be nil but got: %s\n", err)
 	}
 
-	if head != nil {
-		t.Errorf("Expected ping head to be nil but got %s\n", head.ID)
-	}
-
 	// Add contact again. Should be not added again
 	head, _, err = routing.Add(contact2)
-	if head != nil {
-		t.Errorf("Expected ping head to be %s but got nil\n", contact1.ID)
+	if reflect.DeepEqual(head, Contact{}) {
+		t.Errorf("Expected ping head to be %s but got empty contact\n", contact1.ID)
 	}
 
 	if err == nil {

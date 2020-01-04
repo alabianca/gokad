@@ -40,7 +40,7 @@ func NewKBucket(index int) *KBucket {
 // @Source: Implementation of the Kademlia Distributed Hash Table by Bruno Spori Semester Thesis
 // https://pub.tik.ee.ethz.ch/students/2006-So/SA-2006-19.pdf
 ///
-func (b *KBucket) Insert(c *Contact) (*Contact, error) {
+func (b *KBucket) Insert(c Contact) (Contact, error) {
 	// bucket is completely empty. just initialize it
 	if b.IsEmpty() {
 		b.add(c)
@@ -58,20 +58,20 @@ func (b *KBucket) Insert(c *Contact) (*Contact, error) {
 		return c, nil
 	}
 
-	return b.head, errors.New(ErrBucketAtCapacity)
+	return *b.head, errors.New(ErrBucketAtCapacity)
 
 }
 
 // Walk traverses the bucket list calling the walkFn for each contact in the bucket
 // if need to return early from the walk, return true from the walkFn
-func (b *KBucket) Walk(walkFn func(c *Contact) bool) {
+func (b *KBucket) Walk(walkFn func(c Contact) bool) {
 	head := b.head
 	if head == nil {
 		return
 	}
 
 	for {
-		done := walkFn(head)
+		done := walkFn(*head)
 		head = head.next
 		if head == nil || done {
 			break
@@ -90,21 +90,21 @@ func (b *KBucket) Size() int {
 }
 
 // Head returns the head of the bucket list's contacts
-func (b *KBucket) Head() *Contact {
-	return b.head
+func (b *KBucket) Head() Contact {
+	return *b.head
 }
 
 // Tail returns the tail of the bucket list's contacts
-func (b *KBucket) Tail() *Contact {
-	return b.tail
+func (b *KBucket) Tail() Contact {
+	return *b.tail
 }
 
 // indexOf returns the index of the contact
 // if the contact is not found it returns -1
-func (b *KBucket) indexOf(c *Contact) int {
+func (b *KBucket) indexOf(c Contact) int {
 	index := -1
 	var found bool
-	b.Walk(func(contact *Contact) bool {
+	b.Walk(func(contact Contact) bool {
 		index++
 		if c.ID.Equal(contact.ID) {
 			found = true
@@ -121,14 +121,14 @@ func (b *KBucket) indexOf(c *Contact) int {
 	return index
 }
 
-func (b *KBucket) add(c *Contact) {
+func (b *KBucket) add(c Contact) {
 	b.size++
 	if b.IsEmpty() {
-		b.head = c
-		b.tail = c
+		b.head = &c
+		b.tail = &c
 	} else {
-		b.tail.next = c
-		b.tail = c
+		b.tail.next = &c
+		b.tail = &c
 	}
 
 }
@@ -183,12 +183,12 @@ func (b *KBucket) moveToTail(index int) error {
 
 }
 
-func (b *KBucket) getXClosestContacts(x int, targetID ID) []*Contact {
+func (b *KBucket) getXClosestContacts(x int, targetID ID) []Contact {
 	distances := make([]Distance, b.Size())
 	index := 0
-	distanceMap := make(map[string]*Contact)
+	distanceMap := make(map[string]Contact)
 
-	b.Walk(func(c *Contact) bool {
+	b.Walk(func(c Contact) bool {
 		delta := c.ID.DistanceTo(targetID)
 		distanceMap[delta.String()] = c
 		distances[index] = delta
@@ -200,7 +200,7 @@ func (b *KBucket) getXClosestContacts(x int, targetID ID) []*Contact {
 	sort(distances)
 	bounds := math.Min(float64(x), float64(len(distances)))
 	xClosestDeltas := distances[:int(bounds)]
-	out := make([]*Contact, 0)
+	out := make([]Contact, 0)
 
 	for _, d := range xClosestDeltas {
 		contact, ok := distanceMap[d.String()]
@@ -215,7 +215,7 @@ func (b *KBucket) getXClosestContacts(x int, targetID ID) []*Contact {
 func (b KBucket) String() string {
 	buf := new(bytes.Buffer)
 
-	b.Walk(func(c *Contact) bool {
+	b.Walk(func(c Contact) bool {
 		buf.WriteString(c.ID.String() + ",")
 		return false
 	})

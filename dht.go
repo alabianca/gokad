@@ -23,12 +23,12 @@ func NewDHT() *DHT {
 	}
 }
 
-func (dht *DHT) Bootstrap(port int, ip net.IP, hexId string) (*Contact, int, error) {
+func (dht *DHT) Bootstrap(port int, ip net.IP, hexId string) (Contact, int, error) {
 	id, err := From(hexId)
 	if err != nil {
-		return nil, 0, err
+		return Contact{}, 0, err
 	}
-	c := &Contact{
+	c := Contact{
 		IP:   ip,
 		Port: port,
 		ID:   id,

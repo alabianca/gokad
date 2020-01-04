@@ -35,7 +35,7 @@ func NewRoutingTable(id ID) *RoutingTable {
 	@source: Implementation of the Kademlia Distributed Hash Table by Bruno Spori Semester Thesis
    https://pub.tik.ee.ethz.ch/students/2006-So/SA-2006-19.pdf
 **/
-func (r *RoutingTable) Add(c *Contact) (*Contact, int, error) {
+func (r *RoutingTable) Add(c Contact) (Contact, int, error) {
 	delta := r.id.DistanceTo(c.ID)
 	index := r.determineBucketIndex(delta)
 
@@ -53,7 +53,7 @@ func (r *RoutingTable) GetAlphaNodes(alpha int, id ID) []Contact {
 	return r.getXClosestContacts(alpha, id)
 }
 
-func (r *RoutingTable) insertAt(i int, c *Contact) (*Contact, error) {
+func (r *RoutingTable) insertAt(i int, c Contact) (Contact, error) {
 	bucket := r.buckets[i]
 	return bucket.Insert(c)
 }
@@ -112,7 +112,7 @@ func (r *RoutingTable) getXClosestContacts(x int, id ID) []Contact {
 
 		if len(res) > 0 {
 			for _, c := range res {
-				out = append(out, *c)
+				out = append(out, c)
 
 			}
 		}
