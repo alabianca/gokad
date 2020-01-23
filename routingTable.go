@@ -44,6 +44,21 @@ func (r *RoutingTable) Add(c Contact) (Contact, int, error) {
 	return contactOrHead, index, err
 }
 
+func (r *RoutingTable) Bucket(index int) (KBucket, bool) {
+	if len(r.buckets) == 0 {
+		return KBucket{}, false
+	}
+	if index > len(r.buckets) {
+		return *r.buckets[len(r.buckets) - 1], true
+	}
+
+	if index < 0 {
+		return *r.buckets[0], true
+	}
+
+	return *r.buckets[index], true
+}
+
 // GetAlphaNodes gets α nodes out of its k-bucket where the id to be looked up would fit in.
 // α is a system wide concurrency parameter a value of 3 is suggested. If the corresponding k-bucket
 // has less than α entries, the node takes the α closest nodes it knows of.
@@ -73,13 +88,48 @@ func (r *RoutingTable) determineBucketIndex(delta NodeID) int {
 }
 
 // determineOrderOfVisits determines in which order we need to visit
-// k-buckets to close node to delta.
-//
-// For example assume that the own id is 1001110110000101 (Node1) and the id to which the closest
-// ids shall be searched is 1001111110100001 (Node2). To get the distance between the two, they have to be
-// xored, to get a delta of 0000001000100100. Using this delta we know that the closest nodes to Node2
-// must be in k-bucket number 9. We then visit k-bucket number 5 and then number 2 and then number 0 and
-// then go ascending visiting each zero bit bucket
+// our k-buckets to find nodes close to delta
+// we do so by looping through the bit string of delta.
+// consider a delta of 1 0 1 0 (in an address space of 4 for brevity)
+// The order in which we visit the k-buckets will be:
+//   bucket index 3 -> bucket index 1 -> bucket index 0 -> bucket index 2
+// It may be better explained by looking the the full address space as a binary tree
+/**
+                                 /         \
+                                /           \
+                               /             \
+                              /               \
+                             /                 \
+                            /                   \
+                           /                     \
+                          / \                   / \
+                         /   \                 /   \
+                        /     \               /     \
+                       /       \             /       \
+                      /         \           /         \
+                     /           \         /           \
+                    / \         / \       /\           /\
+                   /   \       /   \     /  \         /  \
+                  /\   /\     /\  / \   / \ /\       /\ / \
+                 0 1  2 3    4 5 6  7  8  91011     12131415
+
+    Consider Our ID: 0010 (2)
+             Target: 1000 (8)
+                    ---------
+             Delta:  1010
+
+   The first bucket we visit is bucket 3. This bucket contains ids ranging 8 - 15.
+   In this bucket the deltas range from 0000 - 0111
+   The next bucket we visit is bucket 1. This bucket contains ids ranging from 0 - 1
+   In this bucket the deltas range from 1000 - 1001
+   The next bucket we visit is bucket 0. This bucket contains ids ranging from 2 - 3
+   In this bucket the deltas range from 1010 - 1011
+   The next and last bucket we visit is bucket 2. This bucket contains ids ranging from 4 - 7
+   In this bucket the deltas range from 1100 - 1111
+
+As you can see with every bucket we visit the delta to our Target increases.
+
+ */
 func (r *RoutingTable) determineOrderOfVisits(delta NodeID) []int {
 	phase1 := make([]int, 0)
 	phase2 := make([]int, 0)
