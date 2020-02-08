@@ -12,7 +12,7 @@ type Contact struct {
 	next *Contact
 }
 
-// 20 bytes id <- 2 bytes ip <- 16 bytes port
+// 20 bytes id <- 2 bytes port <- 16 bytes ip
 func (c *Contact) Serialize() []byte {
 	id := c.ID
 

@@ -2,7 +2,7 @@ package gokad
 
 import "math"
 
-// RoutingTable that hold the KBuckets
+// routingTable that hold the KBuckets
 type RoutingTable struct {
 	id      ID
 	buckets []*KBucket
