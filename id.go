@@ -35,6 +35,23 @@ func GenerateRandomID() ID {
 
 }
 
+// GenerateID generates a regular 20 byte ID
+// and copies each byte of in to the ID.
+// example:
+// id := GenerateID([]byte{128, 2, 8})
+// fmt.Println(id) // [128 2 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+// which in the 160 bit address space translates to
+// 100000000000001000001000......0
+// This function can be used for tests to build up mock networks
+func GenerateID(in []byte) ID {
+	out := make(ID, 20)
+	for i, b := range in {
+		out[i] = b
+	}
+
+	return out
+}
+
 // SIZE describes how many bytes in an id
 const SIZE = 20
 

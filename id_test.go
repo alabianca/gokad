@@ -79,3 +79,44 @@ func TestGetBitAt(t *testing.T) {
 	}
 
 }
+
+func TestGenerateIDAndInsert(t *testing.T) {
+	b := make([]byte, 20)
+	b[19] = 1
+	id := GenerateID(b)
+
+
+	cases := []struct{
+		IN ID
+		OUT int
+	}{
+		{
+			IN: GenerateID([]byte{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2}),
+			OUT: 1,
+		},
+		{
+			IN: GenerateID([]byte{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}),
+			OUT: 0,
+		},
+		{
+			IN: GenerateID([]byte{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128}),
+			OUT: 7,
+		},
+		{
+			IN: GenerateID([]byte{128,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}),
+			OUT: 159,
+		},
+	}
+
+	for i, c := range cases {
+		routing := NewRoutingTable(id)
+		_, index, err := routing.Add(Contact{ID: c.IN})
+		if err != nil {
+			t.Fatalf("Case %d failed. Expected error to be nil, but got %s\n", i, err)
+		}
+
+		if index != c.OUT {
+			t.Fatalf("Case %d failed. Expected index to be %d, but got %d\n", i, c.OUT, index)
+		}
+	}
+}
