@@ -6,6 +6,11 @@ const MessageSize = 800
 
 const k = 20
 
+type DHTConfig struct {
+	ID ID
+	RoutingTable *RoutingTable
+}
+
 type Value struct{
 	Host net.IP
 	Port int
@@ -28,6 +33,28 @@ func NewDHT() *DHT {
 		routingTable: routing,
 		storedValues: make(values),
 
+	}
+}
+
+func DHTFrom(config DHTConfig) *DHT {
+	var id ID
+	var routing *RoutingTable
+	if config.ID == nil {
+		id = GenerateRandomID()
+	} else {
+		id = config.ID
+	}
+
+	if config.RoutingTable == nil {
+		routing = NewRoutingTable(id)
+	} else {
+		routing = config.RoutingTable
+	}
+
+	return &DHT {
+		ID: id,
+		routingTable: routing,
+		storedValues: make(values),
 	}
 }
 
